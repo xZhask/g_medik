@@ -206,42 +206,45 @@ $('#btn-off').on('click', function() {
 	});
 });
 /* LISTADOS */
+const ajaxFunction = (url, data) => {
+	let respuesta;
+	$.ajax({
+		type: 'POST',
+		url: url,
+		data: data,
+		async: false,
+		//dataType: 'JSON',
+		error: function() {
+			alert('Error occured');
+		},
+		success: function(response) {
+			respuesta = response;
+		}
+	});
+	return respuesta;
+};
 function ListarPersonal() {
 	let usuario = $('#searchUsuario').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PERSONAL', filtro: usuario }
-	}).done(function(html) {
-		$('#tbUsuarios').html(html);
-	});
+	let data = { accion: 'LISTAR_PERSONAL', filtro: usuario };
+	let url = 'sistema/controlador/controlador.php';
+	let llamadoAjax = ajaxFunction(url, data);
+	$('#tbUsuarios').html(llamadoAjax);
 }
+
 function ListarCargos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_CARGOS' }
-	}).done(function(html) {
-		$('#idcargo').html(html);
-	});
+	let data = { accion: 'LISTAR_CARGOS' };
+	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	$('#idcargo').html(llamadoAjax);
 }
 function CargarEstablecimientos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'CARGAR_ESTABLECIMIENTOS' }
-	}).done(function(html) {
-		$('.establecimiento').html(html);
-	});
+	let data = { accion: 'CARGAR_ESTABLECIMIENTOS' };
+	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	$('.establecimiento').html(llamadoAjax);
 }
 function ListarPacientes() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PACIENTES', filtro: '' }
-	}).done(function(html) {
-		$('#tbPacientes').html(html);
-	});
+	let data = { accion: 'LISTAR_PACIENTES', filtro: '' };
+	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	$('#tbPacientes').html(llamadoAjax);
 }
 function ListarMedicamentos() {
 	$.ajax({
