@@ -970,6 +970,7 @@ function controlador($accion)
             session_start();
             $_SESSION['active'] = false;
             session_destroy();
+            echo '1';
             break;
         case 'LISTAR_REPORTE':
             session_start();

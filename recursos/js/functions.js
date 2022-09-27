@@ -181,30 +181,7 @@ function limpiar() {
 	$('#Pass').css('display', 'block');
 }
 /* VALIDACIÓN */
-$('#frmlogin').on('submit', function(e) {
-	e.preventDefault();
-	var datax = $('#frmlogin').serializeArray();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: datax
-	}).done(function(respuesta) {
-		if (respuesta === 'INICIO') {
-			window.location.assign('index.php');
-		} else {
-			alert('DATOS INCORRECTOS');
-		}
-	});
-});
-$('#btn-off').on('click', function() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LOGOUT' }
-	}).done(function(html) {
-		window.location.assign('login.php');
-	});
-});
+
 /* LISTADOS */
 const ajaxFunction = (data) => {
 	let respuesta;
@@ -223,6 +200,19 @@ const ajaxFunction = (data) => {
 	});
 	return respuesta;
 };
+$('#frmlogin').on('submit', function(e) {
+	e.preventDefault();
+	let datax = $('#frmlogin').serializeArray();
+	let data = datax;
+	let llamadoAjax = ajaxFunction(data);
+	if (llamadoAjax == 'INICIO') window.location.assign('index.php');
+	else alert('DATOS INCORRECTOS');
+});
+$('#btn-off').on('click', function() {
+	let data = { accion: 'LOGOUT' };
+	let llamadoAjax = ajaxFunction(data);
+	if (llamadoAjax == 1) window.location.assign('login.php');
+});
 function ListarPersonal() {
 	let usuario = $('#searchUsuario').val();
 	let data = { accion: 'LISTAR_PERSONAL', filtro: usuario };
@@ -267,128 +257,70 @@ function ListarProcedimientos() {
 }
 function ListarCitas() {
 	fecha = $('#FechaCitados').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_CITAS', fecha: fecha }
-	}).done(function(html) {
-		$('#tbCitas').html(html);
-	});
+	let data = { accion: 'LISTAR_CITAS', fecha: fecha };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbCitas').html(llamadoAjax);
 }
 function ListarConfirmados() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_CITAS_CONFIRMADAS' }
-	}).done(function(respuesta) {
-		$('#tbConfirmados').html(respuesta);
-	});
+	let data = { accion: 'LISTAR_CITAS_CONFIRMADAS' };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbConfirmados').html(llamadoAjax);
 }
 function ListarAtenciones() {
 	fecha = $('#fechaAtenciones').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_ATENCIONES', fecha: fecha }
-	}).done(function(html) {
-		$('#tbAtenciones').html(html);
-	});
+	let data = { accion: 'LISTAR_ATENCIONES', fecha: fecha };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbAtenciones').html(llamadoAjax);
 }
 function listargastos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'LISTAR_GASTOS',
-			idcajadiaria: $('#idcajadiaria').val()
-		}
-	}).done(function(resultado) {
-		$('#tbgastoscaja').html(resultado);
-	});
+	let idcajadiaria = $('#idcajadiaria').val();
+	let data = { accion: 'LISTAR_GASTOS', idcajadiaria: idcajadiaria };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbgastoscaja').html(llamadoAjax);
 }
 function listarmontoscaja() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'LISTAR_MONTOS',
-			idcajadiaria: $('#idcajadiaria').val()
-		}
-	}).done(function(resultado) {
-		$('#tbmontoscaja').html(resultado);
-	});
+	let data = { accion: 'LISTAR_MONTOS', idcajadiaria: $('#idcajadiaria').val() };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbmontoscaja').html(llamadoAjax);
 }
 function listarultimosingresos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'LISTAR_ULTIMOS_INGRESOS',
-			idcajadiaria: $('#idcajadiaria').val()
-		}
-	}).done(function(resultado) {
-		$('#tbingresoscaja').html(resultado);
-	});
+	let data = { accion: 'LISTAR_ULTIMOS_INGRESOS', idcajadiaria: $('#idcajadiaria').val() };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbingresoscaja').html(llamadoAjax);
 }
 function ObtenerCitas() {
-	dni = $('#NroDocBuscarCita').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'OBTENER_DATOS_PACIENTE',
-			dni: dni
-		}
-	}).done(function(respuesta) {
-		json = JSON.parse(respuesta);
-		paciente = json.paciente;
-		$('#lblNombreBuscarCitas').html('Paciente : ' + paciente[0].apellidos + ', ' + paciente[0].nombre);
-		$.ajax({
-			method: 'POST',
-			url: 'sistema/controlador/controlador.php',
-			data: {
-				accion: 'BUSCAR_CITAS',
-				dni: dni
-			}
-		}).done(function(resultado) {
-			$('#tbBusquedaCitas').html(resultado);
-		});
-	});
+	let dni = $('#NroDocBuscarCita').val();
+	let data = { accion: 'OBTENER_DATOS_PACIENTE', dni: dni };
+	let llamadoAjax = ajaxFunction(data);
+	json = JSON.parse(llamadoAjax);
+	paciente = json.paciente;
+	$('#lblNombreBuscarCitas').html(`Paciente : ${paciente[0].apellidos}, ${paciente[0].nombre}`);
+	data = { accion: 'BUSCAR_CITAS', dni: dni };
+	llamadoAjax = ajaxFunction(data);
+	$('#tbBusquedaCitas').html(llamadoAjax);
 }
 function ListarAtencionesPorPaciente(dni) {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_ATENCIONES_PACIENTE', dni: dni }
-	}).done(function(html) {
-		$('#ul-atenciones').html(html);
-	});
+	let data = { accion: 'LISTAR_ATENCIONES_PACIENTE', dni: dni };
+	let llamadoAjax = ajaxFunction(data);
+	$('#ul-atenciones').html(llamadoAjax);
 }
 function ListarOtrosExamenes(dni) {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_OTROS_EXAMENES', dni: dni }
-	}).done(function(html) {
-		$('#ul-otrosexamenes').html(html);
-	});
+	let data = { accion: 'LISTAR_OTROS_EXAMENES', dni: dni };
+	let llamadoAjax = ajaxFunction(data);
+	$('#ul-otrosexamenes').html(llamadoAjax);
 }
 function Kardex() {
-	idproducto = $('#IdProductoKardex').val();
-	fecha1 = $('#KardexDesde').val();
-	fecha2 = $('#KardexHasta').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'KARDEX',
-			idproducto: idproducto,
-			fecha1: fecha1,
-			fecha2: fecha2
-		}
-	}).done(function(html) {
-		$('#tbKardex').html(html);
-	});
+	let idproducto = $('#IdProductoKardex').val();
+	let fecha1 = $('#KardexDesde').val();
+	let fecha2 = $('#KardexHasta').val();
+	let data = {
+		accion: 'KARDEX',
+		idproducto: idproducto,
+		fecha1: fecha1,
+		fecha2: fecha2
+	};
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbKardex').html(llamadoAjax);
 }
 /*--------------- FILTROS Y BÚSQUEDAS ------------------ */
 function BuscarPersonaPersonal() {
@@ -401,57 +333,41 @@ function BuscarPersonaPaciente() {
 }
 
 function ObtenerDatosDni(nro_doc, tipo_persona) {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'CONSULTA_DNI',
-			dni: nro_doc
-		}
-	}).done(function(text) {
-		json = JSON.parse(text);
-		console.log(json);
-		if (tipo_persona == 'PERSONAL') {
-			$('#NombrePersonal').val(json['data'].nombres);
-			$('#ApellidosPersonal').val(json['data'].apellido_paterno + ' ' + json['data'].apellido_materno);
-		} else if (tipo_persona == 'PACIENTE') {
-			bloquearControlsPaciente();
-			$('#menorPaciente').prop('checked', false);
-			if (json['success'] == false) {
-				$('#checkPaciente').addClass('visible');
-			} else if (json['success'] == true) {
-				$('#checkPaciente').removeClass('visible');
-				$('#NombrePaciente').val(json['data'].nombres);
-				$('#ApellidosPaciente').val(json['data'].apellido_paterno + ' ' + json['data'].apellido_materno);
-				$fechanac = json['data'].fecha_nacimiento;
-				if ($fechanac !== null) {
-					$('#fechanac').val($fechanac);
-				} else {
-					$('#fechanac').val('');
-				}
+	let data = { accion: 'CONSULTA_DNI', dni: nro_doc };
+	let llamadoAjax = ajaxFunction(data);
+	let json = JSON.parse(llamadoAjax);
+	if (tipo_persona == 'PERSONAL') {
+		$('#NombrePersonal').val(json['data'].nombres);
+		$('#ApellidosPersonal').val(json['data'].apellido_paterno + ' ' + json['data'].apellido_materno);
+	} else if (tipo_persona == 'PACIENTE') {
+		bloquearControlsPaciente();
+		$('#menorPaciente').prop('checked', false);
+		if (json['success'] == false) {
+			$('#checkPaciente').addClass('visible');
+		} else if (json['success'] == true) {
+			$('#checkPaciente').removeClass('visible');
+			$('#NombrePaciente').val(json['data'].nombres);
+			$('#ApellidosPaciente').val(json['data'].apellido_paterno + ' ' + json['data'].apellido_materno);
+			$fechanac = json['data'].fecha_nacimiento;
+			if ($fechanac !== null) {
+				$('#fechanac').val($fechanac);
+			} else {
+				$('#fechanac').val('');
 			}
 		}
-	});
+	}
 }
 function FiltrarPaciente() {
 	filtro = $('#FiltroPaciente').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PACIENTES', filtro: filtro }
-	}).done(function(html) {
-		$('#tbPacientes').html(html);
-	});
+	let data = { accion: 'LISTAR_PACIENTES', filtro: filtro };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbPacientes').html(llamadoAjax);
 }
 function FiltrarProcedimiento() {
 	filtro = $('#FiltroProcedimiento').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PROCEDIMIENTOS', filtro: filtro }
-	}).done(function(html) {
-		$('#tbProcedimientos').html(html);
-	});
+	let data = { accion: 'LISTAR_PACIENTES', filtro: filtro };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbProcedimientos').html(llamadoAjax);
 }
 function ObtenerDatosPaciente() {
 	dni = $('#NroDocCita').val();
@@ -485,7 +401,7 @@ function ObtenerDatosPaciente() {
 					$('#NombrePacienteC').val(json['data'].nombre_completo);
 					$('#NombrePacienteCita').val(json['data'].nombres);
 					$('#ApellidosPacienteCita').val(
-						json['data'].apellido_paterno + ' ' + json['data'].apellido_materno
+						`${json['data'].apellido_paterno} ${json['data'].apellido_materno}`
 					);
 					$fechanac = json['data'].fecha_nacimiento;
 					if ($fechanac !== null) {
@@ -1394,19 +1310,11 @@ function generarPDF(idatencion) {
 	var x = parseInt(window.screen.width / 2 - ancho / 2);
 	var y = parseInt(window.screen.height / 2 - alto / 2);
 
-	$url = 'recursos/pdf/index.php?idatencion=' + idatencion;
+	$url = `recursos/pdf/index.php?idatencion=${idatencion}`;
 	window.open(
 		$url,
-		'His',
-		'left=' +
-			x +
-			',top=' +
-			y +
-			',height=' +
-			alto +
-			'width=' +
-			ancho +
-			',scrollbar=si,location=no,resizable=si,menubar=no'
+		'Reporte',
+		`left=${x},top=${y},height=${alto}width=${ancho},scrollbar=si,location=no,resizable=si,menubar=no`
 	);
 }
 function generarPDFExterno() {
@@ -1418,25 +1326,11 @@ function generarPDFExterno() {
 	var x = parseInt(window.screen.width / 2 - ancho / 2);
 	var y = parseInt(window.screen.height / 2 - alto / 2);
 
-	$url =
-		'recursos/pdf/reporteexterno.php?fecha1=' +
-		fecha1 +
-		'&fecha2=' +
-		fecha2 +
-		'&establecimiento=' +
-		establecimiento;
+	$url = `recursos/pdf/reporteexterno.php?fecha1=${fecha1}&fecha2=${fecha2}&establecimiento=${establecimiento}`;
 	window.open(
 		$url,
-		'His',
-		'left=' +
-			x +
-			',top=' +
-			y +
-			',height=' +
-			alto +
-			'width=' +
-			ancho +
-			',scrollbar=si,location=no,resizable=si,menubar=no'
+		'Reporte',
+		`left=${x},top=${y},height=${alto}width=${ancho},scrollbar=si,location=no,resizable=si,menubar=no`
 	);
 }
 function generarticketPDF(idcita) {
@@ -1445,19 +1339,11 @@ function generarticketPDF(idcita) {
 	var x = parseInt(window.screen.width / 2 - ancho / 2);
 	var y = parseInt(window.screen.height / 2 - alto / 2);
 
-	$url = 'recursos/pdf/ticket.php?idcita=' + idcita;
+	$url = `recursos/pdf/ticket.php?idcita=${idcita}`;
 	window.open(
 		$url,
-		'His',
-		'left=' +
-			x +
-			',top=' +
-			y +
-			',height=' +
-			alto +
-			'width=' +
-			ancho +
-			',scrollbar=si,location=no,resizable=si,menubar=no'
+		'Reporte',
+		`left=${x},top=${y},height=${alto}width=${ancho},scrollbar=si,location=no,resizable=si,menubar=no`
 	);
 }
 function generarPDFReporte() {
@@ -1469,19 +1355,11 @@ function generarPDFReporte() {
 	var x = parseInt(window.screen.width / 2 - ancho / 2);
 	var y = parseInt(window.screen.height / 2 - alto / 2);
 
-	$url = 'recursos/pdf/reporte.php?fecha1=' + fecha1 + '&fecha2=' + fecha2 + '&tipomovimiento=' + tipomovimiento;
+	$url = `recursos/pdf/reporte.php?fecha1=${fecha1}&fecha2=${fecha2}&tipomovimiento=${tipomovimiento}`;
 	window.open(
 		$url,
-		'His',
-		'left=' +
-			x +
-			',top=' +
-			y +
-			',height=' +
-			alto +
-			'width=' +
-			ancho +
-			',scrollbar=si,location=no,resizable=si,menubar=no'
+		'Reporte',
+		`left=${x},top=${y},height=${alto}width=${ancho},scrollbar=si,location=no,resizable=si,menubar=no`
 	);
 }
 function ValidarSesion(div, contenido, contenedor, link) {
