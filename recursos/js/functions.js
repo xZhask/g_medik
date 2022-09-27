@@ -1314,18 +1314,9 @@ function ValidarSesion(div, contenido, contenedor, link) {
 	});
 }
 function ValidarSesion2() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'VALIDAR_SESION'
-		}
-	}).done(function(respuesta) {
-		console.log(respuesta);
-		if (respuesta == 'NECESITA VOLVER A LOGEAR') {
-			window.location.replace('login.php');
-		}
-	});
+	let data = { accion: 'VALIDAR_SESION' };
+	let llamadoAjax = ajaxFunction(data);
+	if (llamadoAjax == 'NECESITA VOLVER A LOGEAR') window.location.replace('login.php');
 }
 function ObtenerDatosPacienteCExt() {
 	dni = $('#NroDocCitaExt').val();
