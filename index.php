@@ -93,11 +93,6 @@ $cargo = $_SESSION['cargo'];
           <input type="date" name="FechaCita" id="FechaCita" />
           <input type="time" name="HoraCita" id="HoraCita" />
         </div>
-        <!-- <datalist id="listaHoras">
-          <option value="09:15">
-          <option value="09:30">
-          <option value="10:00">
-        </datalist> -->
         <input type="text" placeholder="N° de celular" id="NroCelularCita" name="NroCelularCita" />
         <button type="button" onclick="RegistrarCita()">
           Registrar
@@ -608,7 +603,7 @@ $cargo = $_SESSION['cargo'];
     </div>
     <div class="cont-sesion">
       <p><?php echo $_SESSION['apellidos'] . ', ' . $_SESSION['nombre']; ?></p>
-      <i class="fas fa-power-off" onclick="logout()"></i>
+      <i class="fas fa-power-off btn-off" id="btn-off"></i>
     </div>
   </header>
   <div class="wrapper">
