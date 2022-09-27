@@ -649,16 +649,12 @@ function MostrarPagarCuenta(MontoTotal) {
 	$('#frmregistrarpago').addClass('activo');
 	$('#PrecioPago').val('');
 	$('#ACuentaPago').val('');
-	idcita = $('#IdCita').val();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'OBTENER_MOVIMIENTO_CUENTA', idcita: idcita }
-	}).done(function(respuesta) {
-		monto = MontoTotal - respuesta;
-		$('#PrecioPago').val(monto);
-		$('#ACuentaPago').val(monto);
-	});
+	let idcita = $('#IdCita').val();
+	let data = { accion: 'OBTENER_MOVIMIENTO_CUENTA', idcita: idcita };
+	let llamadoAjax = ajaxFunction(data);
+	monto = MontoTotal - llamadoAjax;
+	$('#PrecioPago').val(monto);
+	$('#ACuentaPago').val(monto);
 }
 
 function aperturarcaja() {
@@ -686,97 +682,71 @@ function aperturarcaja() {
 	}
 }
 function cerrarcaja() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'CERRAR_CAJA',
-			idcajadiaria: $('#idcajadiaria').val(),
-			montocierre: $('#totalcaja').html()
-		}
-	}).done(function(html) {
-		$('#fecha_inicio_caja').html('');
-		verificarcaja();
-		verificarcajaabierta();
-		cerrarmodal();
-	});
+	let data = {
+		accion: 'CERRAR_CAJA',
+		idcajadiaria: $('#idcajadiaria').val(),
+		montocierre: $('#totalcaja').html()
+	};
+	let llamadoAjax = ajaxFunction(data);
+	$('#fecha_inicio_caja').html('');
+	verificarcaja();
+	verificarcajaabierta();
+	cerrarmodal();
 }
 function RegistrarPago() {
-	if ($('#tipopago').val() == '0') {
-		alert('SELECCIONE TIPO DE PAGO');
-	} else {
+	if ($('#tipopago').val() == '0') alert('SELECCIONE TIPO DE PAGO');
+	else {
 		datax = $('#frmregistrarpago').serializeArray();
-		$.ajax({
-			method: 'POST',
-			url: 'sistema/controlador/controlador.php',
-			data: datax
-		}).done(function(respuesta) {
-			console.log(respuesta);
-			//imprimirticket(respuesta)
-			generarticketPDF(respuesta);
-			ListarCitas();
-			cerrarmodal();
-		});
+		let llamadoAjax = ajaxFunction(datax);
+		generarticketPDF(llamadoAjax);
+		ListarCitas();
+		cerrarmodal();
 	}
 }
 function verificarcajaabierta() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'VERIFICAR_CAJA'
-		}
-	}).done(function(resultado) {
-		if (resultado === 'SIN REGISTRO') {
-			$('#btnsi_mostrarpago').prop('disabled', true);
-			$('#btnsi_mostrarpago').addClass('btndisabled');
-			$('#btn-regPago').prop('disabled', true);
-			$('#btn-regPago').addClass('btndisabled');
-		} else {
-			$('#btnsi_mostrarpago').prop('disabled', false);
-			$('#btnsi_mostrarpago').removeClass('btndisabled');
-			$('#btn-regPago').prop('disabled', false);
-			$('#btn-regPago').removeClass('btndisabled');
-		}
-	});
+	let data = { accion: 'VERIFICAR_CAJA' };
+	let llamadoAjax = ajaxFunction(data);
+	let tipo = llamadoAjax === 'SIN REGISTRO' ? true : false;
+	if (llamadoAjax === 'SIN REGISTRO') {
+		$('#btnsi_mostrarpago').addClass('btndisabled');
+		$('#btn-regPago').addClass('btndisabled');
+	} else {
+		$('#btnsi_mostrarpago').removeClass('btndisabled');
+		$('#btn-regPago').removeClass('btndisabled');
+	}
+	$('#btnsi_mostrarpago').prop('disabled', tipo);
+	$('#btn-regPago').prop('disabled', tipo);
 }
 function verificarcaja() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'VERIFICAR_CAJA'
-		}
-	}).done(function(resultado) {
-		if (resultado === 'SIN REGISTRO') {
-			$('#fecha_inicio_caja').html('');
-			$('#btncerrarcaja').removeClass('btnhabilitado');
-			$('#btncerrarcaja').addClass('btndisabled');
-			$('#btncerrarcaja').prop('disabled', true);
+	let llamadoAjax = ajaxFunction({ accion: 'VERIFICAR_CAJA' });
+	if (llamadoAjax === 'SIN REGISTRO') {
+		$('#fecha_inicio_caja').html('');
+		$('#btncerrarcaja').removeClass('btnhabilitado');
+		$('#btncerrarcaja').addClass('btndisabled');
+		$('#btncerrarcaja').prop('disabled', true);
 
-			$('#btnaperturarcaja').prop('disabled', false);
-			$('#btnaperturarcaja').removeClass('btndisabled');
-			$('#btnaperturarcaja').addClass('btnhabilitado');
-			$('.cont_tablas_caja').css('display', 'none');
-			$('.cont_caja_cerrada').css('display', 'block');
-		} else {
-			json = JSON.parse(resultado);
-			datoscaja = json.datoscaja;
-			$('#idcajadiaria').val(datoscaja[0].idcajadiaria);
-			$('#fecha_inicio_caja').html(datoscaja[0].fecha_apertura);
-			$('#btnaperturarcaja').removeClass('btnhabilitado');
-			$('#btnaperturarcaja').addClass('btndisabled');
-			$('#btnaperturarcaja').prop('disabled', true);
-			$('#btncerrarcaja').prop('disabled', false);
-			$('#btncerrarcaja').addClass('btnhabilitado');
-			$('#btncerrarcaja').removeClass('btndisabled');
-			$('.cont_tablas_caja').css('display', 'block');
-			$('.cont_caja_cerrada').css('display', 'none');
-			listargastos();
-			listarmontoscaja();
-			listarultimosingresos();
-		}
-	});
+		$('#btnaperturarcaja').prop('disabled', false);
+		$('#btnaperturarcaja').removeClass('btndisabled');
+		$('#btnaperturarcaja').addClass('btnhabilitado');
+		$('.cont_tablas_caja').css('display', 'none');
+		$('.cont_caja_cerrada').css('display', 'block');
+	} else {
+		json = JSON.parse(llamadoAjax);
+		datoscaja = json.datoscaja;
+		$('#idcajadiaria').val(datoscaja[0].idcajadiaria);
+		$('#fecha_inicio_caja').html(datoscaja[0].fecha_apertura);
+		$('#btnaperturarcaja').removeClass('btnhabilitado');
+		$('#btnaperturarcaja').addClass('btndisabled');
+		$('#btnaperturarcaja').prop('disabled', true);
+		$('#btncerrarcaja').prop('disabled', false);
+		$('#btncerrarcaja').addClass('btnhabilitado');
+		$('#btncerrarcaja').removeClass('btndisabled');
+		$('.cont_tablas_caja').css('display', 'block');
+		$('.cont_caja_cerrada').css('display', 'none');
+		listargastos();
+		listarmontoscaja();
+		listarultimosingresos();
+	}
 }
 function registrargasto() {
 	monto = $('#MontoGasto').val();
@@ -801,44 +771,35 @@ function registrargasto() {
 }
 
 $(function() {
-	$(document).on('click', '#tbConfirmados .fa-heartbeat', function(event) {
-		event.preventDefault();
-		var parent = $(this).closest('table');
-		var tr = $(this).closest('tr');
-		codigo = $(tr).find('td').eq(1).html();
+	$(document).on('click', '#tbConfirmados .fa-heartbeat', function(e) {
+		e.preventDefault();
+		let parent = $(this).closest('table');
+		let tr = $(this).closest('tr');
+		let codigo = $(tr).find('td').eq(1).html();
 		$('#idatencion_signos').val(codigo);
-		$.ajax({
-			method: 'POST',
-			url: 'sistema/controlador/controlador.php',
-			data: { accion: 'OBTENER_SIGNOS_VITALES', idatencion: codigo }
-		}).done(function(respuesta) {
-			if (respuesta !== 'SIGNOS NO REGISTRADOS') {
-				json = JSON.parse(respuesta);
-				signos = json.signos;
-				$('#fr_signosv').val(signos[0].fr);
-				$('#pa_signosv').val(signos[0].pa);
-				$('#temp_signosv').val(signos[0].temp);
-				$('#so2_signosv').val(signos[0].so2);
-				$('#peso_signosv').val(signos[0].peso);
-				$('#btnregistrarsignos').html('Actualizar Signos');
-			} else {
-				$('#btnregistrarsignos').html('Registrar Signos');
-			}
-		});
+
+		let data = { accion: 'OBTENER_SIGNOS_VITALES', idatencion: codigo };
+		let llamadoAjax = ajaxFunction(data);
+		if (llamadoAjax !== 'SIGNOS NO REGISTRADOS') {
+			json = JSON.parse(llamadoAjax);
+			signos = json.signos;
+			$('#fr_signosv').val(signos[0].fr);
+			$('#pa_signosv').val(signos[0].pa);
+			$('#temp_signosv').val(signos[0].temp);
+			$('#so2_signosv').val(signos[0].so2);
+			$('#peso_signosv').val(signos[0].peso);
+			$('#btnregistrarsignos').html('Actualizar Signos');
+		} else {
+			$('#btnregistrarsignos').html('Registrar Signos');
+		}
 		abrirRegistroSignosVitales();
 	});
 });
 
 function registrarSignosVitales() {
 	datax = $('#frmRegistrarSignosV').serializeArray();
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: datax
-	}).done(function(respuesta) {
-		//limpiar()
-		cerrarmodal();
-	});
+	let llamadoAjax = ajaxFunction(datax);
+	cerrarmodal();
 }
 function RegistrarAtencion() {
 	$('#btnregistraratencion').prop('disabled', true);
@@ -854,40 +815,26 @@ function RegistrarAtencion() {
 			ListarConfirmados();
 			MostrarRegistrarTratamiento();
 		}
-		//cerrarmodal()
 	});
 }
 $(function() {
-	$(document).on('click', '#tbPacientes .open-atencion', function(event) {
-		event.preventDefault();
-		var parent = $(this).closest('table');
-		var tr = $(this).closest('tr');
+	$(document).on('click', '#tbPacientes .open-atencion', function(e) {
+		e.preventDefault();
+		let parent = $(this).closest('table');
+		let tr = $(this).closest('tr');
 		dni = $(tr).find('td').eq(0).html();
-		$.ajax({
-			method: 'POST',
-			url: 'sistema/controlador/controlador.php',
-			data: {
-				accion: 'OBTENER_DATOS_PACIENTE',
-				dni: dni
-			}
-		}).done(function(resultado) {
-			json = JSON.parse(resultado);
-			paciente = json.paciente;
-			$('#h2Paciente').html(
-				paciente[0].apellidos +
-					', ' +
-					paciente[0].nombre +
-					'<br/><span>Dni: ' +
-					paciente[0].dni +
-					' | Fecha Nac.: ' +
-					paciente[0].fecha_nac +
-					'</span>'
-			);
-			$('#IdPacienteHistoria').val(dni);
-			ListarAtencionesPorPaciente(dni);
-			ListarOtrosExamenes(dni);
-			limpiarhistoria();
-		});
+		let data = { accion: 'OBTENER_DATOS_PACIENTE', dni: dni };
+		let llamadoAjax = ajaxFunction(data);
+		json = JSON.parse(llamadoAjax);
+		paciente = json.paciente;
+		$('#h2Paciente').html(
+			`${paciente[0].apellidos}, ${paciente[0].nombre}<br/><span>Dni: ${paciente[0]
+				.dni} | Fecha Nac.: ${paciente[0].fecha_nac}</span>`
+		);
+		$('#IdPacienteHistoria').val(dni);
+		ListarAtencionesPorPaciente(dni);
+		ListarOtrosExamenes(dni);
+		limpiarhistoria();
 		abrirHistorial();
 	});
 });
@@ -948,7 +895,7 @@ function VerExamen(idatencion) {
 		json = JSON.parse(respuesta);
 		atencion = json.atencion;
 		console.log(respuesta);
-		$('#cont-examen').html('<iframe src="formularios/' + atencion[0].examen + '" width="100%"></iframe>');
+		$('#cont-examen').html(`<iframe src="formularios/${atencion[0].examen}" width="100%"></iframe>`);
 		console.log(atencion[0].examen);
 	});
 }
@@ -967,11 +914,8 @@ function VerPDF(idexamen) {
 		json = JSON.parse(respuesta);
 		examenes = json.examenes;
 		$('#cont-examen').html(
-			'<div class="cont-opciones-examenes"><button type="button" class="btndel" onclick="EliminarExamen(' +
-				idexamen +
-				')">Eliminar Examen</button></div><iframe src="' +
-				examenes[0].archivo +
-				'" width="100%"></iframe>'
+			`<div class="cont-opciones-examenes"><button type="button" class="btndel" onclick="EliminarExamen(${idexamen})">Eliminar Examen</button></div><iframe src="${examenes[0]
+				.archivo}" width="100%"></iframe>`
 		);
 		console.log(examenes[0].archivo);
 	});
@@ -988,10 +932,7 @@ function VerIMG(idexamen) {
 		data: { accion: 'OBTENER_OTRO_EXAMEN_IMG', idexamen: idexamen }
 	}).done(function(respuesta) {
 		$('#cont-imagenes').html(
-			'<div class="cont-opciones-examenes"><button type="button" class="btndel" onclick="EliminarExamen(' +
-				idexamen +
-				')">Eliminar Examen</button></div>' +
-				respuesta
+			`<div class="cont-opciones-examenes"><button type="button" class="btndel" onclick="EliminarExamen(${idexamen})">Eliminar Examen</button></div>${respuesta}`
 		);
 	});
 }
@@ -1008,18 +949,11 @@ function EliminarExamen(idexamen) {
 		cancelButtonText: 'Cancelar'
 	}).then((result) => {
 		if (result.isConfirmed) {
-			$.ajax({
-				method: 'POST',
-				url: 'sistema/controlador/controlador.php',
-				data: {
-					accion: 'ELIMINAR_EXAMEN',
-					idexamen: idexamen
-				}
-			}).done(function(respuesta) {
-				Swal.fire('Se ha eliminado el examen', idexamen, 'success');
-				ListarOtrosExamenes(dni);
-				limpiarhistoria();
-			});
+			let data = { accion: 'ELIMINAR_EXAMEN', idexamen: idexamen };
+			let llamadoAjax = ajaxFunction(data);
+			Swal.fire('Se ha eliminado el examen', idexamen, 'success');
+			ListarOtrosExamenes(dni);
+			limpiarhistoria();
 		}
 	});
 }
@@ -1056,8 +990,8 @@ $(function() {
 $(function() {
 	$(document).on('click', '#tbCitas .fa-sliders-h', function(event) {
 		event.preventDefault();
-		var parent = $(this).closest('table');
-		var tr = $(this).closest('tr');
+		let parent = $(this).closest('table');
+		let tr = $(this).closest('tr');
 		idcita = $(tr).find('td').eq(0).html();
 		$('#CodigoCita').val(idcita);
 		$.ajax({
@@ -1396,35 +1330,17 @@ function ValidarSesion2() {
 function ObtenerDatosPacienteCExt() {
 	dni = $('#NroDocCitaExt').val();
 	$('#NombrePacienteCExt').val('');
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: {
-			accion: 'OBTENER_DATOS_PACIENTE',
-			dni: dni
-		}
-	}).done(function(respuesta) {
-		if (respuesta == 'NO REGISTRADO') {
-			$.ajax({
-				method: 'POST',
-				url: 'sistema/controlador/controlador.php',
-				data: {
-					accion: 'CONSULTA_DNI',
-					dni: dni
-				}
-			}).done(function(text) {
-				json = JSON.parse(text);
-				if (json['success'] == false) {
-					$('#NombrePacienteCExt').prop('readonly', false);
-				} else if (json['success'] == true) {
-					$('#NombrePacienteCExt').val(json['data'].nombre_completo);
-				}
-			});
-		} else {
-			json = JSON.parse(respuesta);
-			paciente = json.paciente;
-			console.log(json);
-			$('#NombrePacienteCExt').val(paciente[0].apellidos + ', ' + paciente[0].nombre);
-		}
-	});
+	let data = { accion: 'OBTENER_DATOS_PACIENTE', dni: dni };
+	let llamadoAjax = ajaxFunction(data);
+	if (llamadoAjax == 'NO REGISTRADO') {
+		data = { accion: 'CONSULTA_DNI', dni: dni };
+		llamadoAjax = ajaxFunction(data);
+		json = JSON.parse(llamadoAjax);
+		if (json['success'] == false) $('#NombrePacienteCExt').prop('readonly', false);
+		else if (json['success'] == true) $('#NombrePacienteCExt').val(json['data'].nombre_completo);
+	} else {
+		json = JSON.parse(llamadoAjax);
+		paciente = json.paciente;
+		$('#NombrePacienteCExt').val(paciente[0].apellidos + ', ' + paciente[0].nombre);
+	}
 }
