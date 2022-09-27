@@ -206,11 +206,11 @@ $('#btn-off').on('click', function() {
 	});
 });
 /* LISTADOS */
-const ajaxFunction = (url, data) => {
+const ajaxFunction = (data) => {
 	let respuesta;
 	$.ajax({
 		type: 'POST',
-		url: url,
+		url: 'sistema/controlador/controlador.php',
 		data: data,
 		async: false,
 		//dataType: 'JSON',
@@ -226,61 +226,44 @@ const ajaxFunction = (url, data) => {
 function ListarPersonal() {
 	let usuario = $('#searchUsuario').val();
 	let data = { accion: 'LISTAR_PERSONAL', filtro: usuario };
-	let url = 'sistema/controlador/controlador.php';
-	let llamadoAjax = ajaxFunction(url, data);
+	let llamadoAjax = ajaxFunction(data);
 	$('#tbUsuarios').html(llamadoAjax);
 }
 
 function ListarCargos() {
 	let data = { accion: 'LISTAR_CARGOS' };
-	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	let llamadoAjax = ajaxFunction(data);
 	$('#idcargo').html(llamadoAjax);
 }
 function CargarEstablecimientos() {
 	let data = { accion: 'CARGAR_ESTABLECIMIENTOS' };
-	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	let llamadoAjax = ajaxFunction(data);
 	$('.establecimiento').html(llamadoAjax);
 }
 function ListarPacientes() {
 	let data = { accion: 'LISTAR_PACIENTES', filtro: '' };
-	let llamadoAjax = ajaxFunction('sistema/controlador/controlador.php', data);
+	let llamadoAjax = ajaxFunction(data);
 	$('#tbPacientes').html(llamadoAjax);
 }
 function ListarMedicamentos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_MEDICAMENTOS' }
-	}).done(function(html) {
-		$('#tbMedicamentos').html(html);
-	});
+	let data = { accion: 'LISTAR_MEDICAMENTOS' };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbMedicamentos').html(llamadoAjax);
 }
 function ListarInsumos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_INSUMOS' }
-	}).done(function(html) {
-		$('#tbInsumos').html(html);
-	});
+	let data = { accion: 'LISTAR_INSUMOS' };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbInsumos').html(llamadoAjax);
 }
 function ListarPendientes() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PENDIENTES' }
-	}).done(function(html) {
-		$('#tbPendientes').html(html);
-	});
+	let data = { accion: 'LISTAR_PENDIENTES' };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbPendientes').html(llamadoAjax);
 }
 function ListarProcedimientos() {
-	$.ajax({
-		method: 'POST',
-		url: 'sistema/controlador/controlador.php',
-		data: { accion: 'LISTAR_PROCEDIMIENTOS', filtro: '' }
-	}).done(function(html) {
-		$('#tbProcedimientos').html(html);
-	});
+	let data = { accion: 'LISTAR_PROCEDIMIENTOS', filtro: '' };
+	let llamadoAjax = ajaxFunction(data);
+	$('#tbProcedimientos').html(llamadoAjax);
 }
 function ListarCitas() {
 	fecha = $('#FechaCitados').val();
