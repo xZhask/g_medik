@@ -545,8 +545,8 @@ function RegistrarEstablecimiento() {
 $(function () {
   $(document).on("click", "#tbUsuarios .edit-usuario", function (event) {
     event.preventDefault();
-    var parent = $(this).closest("table");
-    var tr = $(this).closest("tr");
+    let parent = $(this).closest("table");
+    let tr = $(this).closest("tr");
     codigo = $(tr).find("td").eq(0).html();
 
     $("#NroDocPersonal").val(codigo);
@@ -590,8 +590,8 @@ function RegistrarPaciente() {
 $(function () {
   $(document).on("click", "#tbPacientes .edit-paciente", function (event) {
     event.preventDefault();
-    var parent = $(this).closest("table");
-    var tr = $(this).closest("tr");
+    let parent = $(this).closest("table");
+    let tr = $(this).closest("tr");
     codigo = $(tr).find("td").eq(0).html();
 
     $("#NroDocPaciente").val(codigo);
@@ -994,8 +994,8 @@ function RegistrarProcedimiento() {
 $(function () {
   $(document).on("click", "#tbProcedimientos .fa-edit", function (event) {
     event.preventDefault();
-    var parent = $(this).closest("table");
-    var tr = $(this).closest("tr");
+    let parent = $(this).closest("table");
+    let tr = $(this).closest("tr");
     codigo = $(tr).find("td").eq(0).html();
     nombre = $(tr).find("td").eq(1).html();
     precio = $(tr).find("td").eq(2).html();
@@ -1045,8 +1045,8 @@ $(function () {
 $(function () {
   $(document).on("click", "#tbAtenciones .fa-eye", function (event) {
     event.preventDefault();
-    var parent = $(this).closest("table");
-    var tr = $(this).closest("tr");
+    let parent = $(this).closest("table");
+    let tr = $(this).closest("tr");
     idatencion = $(tr).find("td").eq(0).html();
     dni = $(tr).find("td").eq(1).html();
     $.ajax({
@@ -1092,12 +1092,12 @@ function Reporte() {
   }).done(function (html) {
     $("#tbReporte").html(html);
     nFilas = $("#tbReporte tr").length;
-    var total = 0;
+    let total = 0;
     efectivo = 0;
     transferencia = 0;
     pos = 0;
     yape = 0;
-    var num = 0;
+    let num = 0;
     $("#tbReporte tr").each(function () {
       tipopago = $(this).find("td").eq(5).html();
       estado = $(this).find("td").eq(7).html();
@@ -1126,16 +1126,11 @@ function Reporte() {
   });
 }
 function RegistrarCitaExterna() {
-  datax = $("#frmregistrarcita_externa").serializeArray();
-  $.ajax({
-    method: "POST",
-    url: "sistema/controlador/controlador.php",
-    data: datax,
-  }).done(function (respuesta) {
-    alert(respuesta);
-    ListarCitasExternas();
-    cerrarmodal();
-  });
+  let datax = $("#frmregistrarcita_externa").serializeArray();
+  let llamadoAjax = ajaxFunction(datax);
+  alert(llamadoAjax);
+  ListarCitasExternas();
+  cerrarmodal();
 }
 function ListarCitasExternas() {
   fecha1 = $("#FechaExterno1").val();
@@ -1153,8 +1148,8 @@ function ListarCitasExternas() {
   }).done(function (html) {
     $("#tbCitasExternas").html(html);
     nFilas = $("#tbCitasExternas tr").length;
-    var total = 0;
-    var num = 0;
+    let total = 0;
+    let num = 0;
     $("#tbCitasExternas tr").each(function () {
       total += parseFloat($(this).find("td").eq(6).html());
       num++;
@@ -1226,51 +1221,36 @@ function RegistrarMovimientoA() {
   }
 }
 function CancelarTratamiento() {
-  $.ajax({
-    method: "POST",
-    url: "sistema/controlador/controlador.php",
-    data: {
-      accion: "CANCELAR_CARRITO",
-    },
-  }).done(function (html) {
-    $("#tbTratamiento").html(html);
-  });
+  let llamadoAjax = ajaxFunction({ accion: "CANCELAR_CARRITO" });
+  $("#tbTratamiento").html(llamadoAjax);
 }
 function MostrarRegistrarTratamiento() {
   $("#frmRegistrarAtencion").removeClass("activo");
   $("#frmRegistrarTratamiento").addClass("activo");
-  idatencion = $("#ate_idatencion").val();
+  let idatencion = $("#ate_idatencion").val();
   $("#idatencion_trat").val(idatencion);
-  console.log(idatencion);
   $(".modal").removeClass("w100");
   $(".bg-dark").removeClass("all");
 }
 
 function CambiarPass() {
-  pass1 = $("#pass1").val();
-  pass2 = $("#pass2").val();
-  if (pass1 == "" || pass2 == "") {
-    alert("INGRESAR CONTRASEÑAS VÁLIDAS");
-  } else if (pass1 != pass2) {
-    alert("CONTRASEÑAS NO COINCIDEN");
-  } else {
-    datax = $("#frmCambioPass").serializeArray();
-    $.ajax({
-      method: "POST",
-      url: "sistema/controlador/controlador.php",
-      data: datax,
-    }).done(function (respuesta) {
-      alert(respuesta);
-      cerrarmodal();
-    });
+  let pass1 = $("#pass1").val();
+  let pass2 = $("#pass2").val();
+  if (pass1 == "" || pass2 == "") alert("INGRESAR CONTRASEÑAS VÁLIDAS");
+  else if (pass1 != pass2) alert("CONTRASEÑAS NO COINCIDEN");
+  else {
+    let datax = $("#frmCambioPass").serializeArray();
+    let llamadoAjax = ajaxFunction(datax);
+    alert(llamadoAjax);
+    cerrarmodal();
   }
 }
 
 function generarPDF(idatencion) {
-  var ancho = 1000;
-  var alto = 800;
-  var x = parseInt(window.screen.width / 2 - ancho / 2);
-  var y = parseInt(window.screen.height / 2 - alto / 2);
+  let ancho = 1000;
+  let alto = 800;
+  let x = parseInt(window.screen.width / 2 - ancho / 2);
+  let y = parseInt(window.screen.height / 2 - alto / 2);
 
   $url = `recursos/pdf/index.php?idatencion=${idatencion}`;
   window.open(
@@ -1283,10 +1263,10 @@ function generarPDFExterno() {
   fecha1 = $("#FechaExterno1").val();
   fecha2 = $("#FechaExterno2").val();
   establecimiento = $("#establecimiento").val();
-  var ancho = 1000;
-  var alto = 800;
-  var x = parseInt(window.screen.width / 2 - ancho / 2);
-  var y = parseInt(window.screen.height / 2 - alto / 2);
+  let ancho = 1000;
+  let alto = 800;
+  let x = parseInt(window.screen.width / 2 - ancho / 2);
+  let y = parseInt(window.screen.height / 2 - alto / 2);
 
   $url = `recursos/pdf/reporteexterno.php?fecha1=${fecha1}&fecha2=${fecha2}&establecimiento=${establecimiento}`;
   window.open(
@@ -1296,10 +1276,10 @@ function generarPDFExterno() {
   );
 }
 function generarticketPDF(idcita) {
-  var ancho = 1000;
-  var alto = 800;
-  var x = parseInt(window.screen.width / 2 - ancho / 2);
-  var y = parseInt(window.screen.height / 2 - alto / 2);
+  let ancho = 1000;
+  let alto = 800;
+  let x = parseInt(window.screen.width / 2 - ancho / 2);
+  let y = parseInt(window.screen.height / 2 - alto / 2);
 
   $url = `recursos/pdf/ticket.php?idcita=${idcita}`;
   window.open(
@@ -1312,10 +1292,10 @@ function generarPDFReporte() {
   fecha1 = $("#ReporteDesde").val();
   fecha2 = $("#ReporteHasta").val();
   tipomovimiento = $("input:radio[name=tipomovimiento]:checked").val();
-  var ancho = 1000;
-  var alto = 800;
-  var x = parseInt(window.screen.width / 2 - ancho / 2);
-  var y = parseInt(window.screen.height / 2 - alto / 2);
+  let ancho = 1000;
+  let alto = 800;
+  let x = parseInt(window.screen.width / 2 - ancho / 2);
+  let y = parseInt(window.screen.height / 2 - alto / 2);
 
   $url = `recursos/pdf/reporte.php?fecha1=${fecha1}&fecha2=${fecha2}&tipomovimiento=${tipomovimiento}`;
   window.open(
