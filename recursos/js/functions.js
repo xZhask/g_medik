@@ -906,31 +906,24 @@ $(function () {
     event.preventDefault();
     let parent = $(this).closest("table");
     let tr = $(this).closest("tr");
-    idcita = $(tr).find("td").eq(0).html();
+    let idcita = $(tr).find("td").eq(0).html();
     $("#CodigoCita").val(idcita);
-    $.ajax({
-      method: "POST",
-      url: "sistema/controlador/controlador.php",
-      data: {
-        accion: "OBTENER_DATOS_CITA",
-        idcita: idcita,
-      },
-    }).done(function (resultado) {
-      json = JSON.parse(resultado);
-      cita = json.cita;
-      console.log(resultado);
-      $("#TipoPaciente").val("REG");
-      $("#NroDocCita").val(cita[0].dni);
-      $("#NombrePacienteC").val(
-        `${cita[0].apellidospaciente}, ${cita[0].nombrepaciente}`
-      );
-      $("#IdMovitoCita").val(cita[0].idtipoatencion);
-      $("#MovitoCita").val(cita[0].motivo);
-      $("#PrecioMotivoCita").val(cita[0].precio);
-      $("#FechaCita").val(cita[0].fecha);
-      $("#HoraCita").val(cita[0].horario);
-      $("#NroCelularCita").val(cita[0].telefono);
-    });
+    let data = { accion: "OBTENER_DATOS_CITA", idcita: idcita };
+    let llamadoAjax = ajaxFunction(data);
+    let json = JSON.parse(llamadoAjax);
+    let cita = json.cita;
+    $("#TipoPaciente").val("REG");
+    $("#NroDocCita").val(cita[0].dni);
+    $("#NombrePacienteC").val(
+      `${cita[0].apellidospaciente}, ${cita[0].nombrepaciente}`
+    );
+    $("#IdMovitoCita").val(cita[0].idtipoatencion);
+    $("#MovitoCita").val(cita[0].motivo);
+    $("#PrecioMotivoCita").val(cita[0].precio);
+    $("#FechaCita").val(cita[0].fecha);
+    $("#HoraCita").val(cita[0].horario);
+    $("#NroCelularCita").val(cita[0].telefono);
+
     abrirRegistrarCita();
     $("#AccionCita").val("ACTUALIZAR_CITA");
   });
@@ -942,23 +935,16 @@ $(function () {
     let tr = $(this).closest("tr");
     idatencion = $(tr).find("td").eq(0).html();
     dni = $(tr).find("td").eq(1).html();
-    $.ajax({
-      method: "POST",
-      url: "sistema/controlador/controlador.php",
-      data: {
-        accion: "OBTENER_DATOS_PACIENTE",
-        dni: dni,
-      },
-    }).done(function (resultado) {
-      json = JSON.parse(resultado);
-      paciente = json.paciente;
-      $("#h2Paciente").html(
-        `${paciente[0].apellidos}, ${paciente[0].nombre} <br/><span>Dni: ${paciente[0].dni} | Fecha Nac.: ${paciente[0].fecha_nac}</span>`
-      );
-      ListarAtencionesPorPaciente(dni);
-      ListarOtrosExamenes(dni);
-      VerAtencion(idatencion);
-    });
+    let data = { accion: "OBTENER_DATOS_PACIENTE", dni: dni };
+    let llamadoAjax = ajaxFunction(data);
+    let json = JSON.parse(llamadoAjax);
+    let paciente = json.paciente;
+    $("#h2Paciente").html(
+      `${paciente[0].apellidos}, ${paciente[0].nombre} <br/><span>Dni: ${paciente[0].dni} | Fecha Nac.: ${paciente[0].fecha_nac}</span>`
+    );
+    ListarAtencionesPorPaciente(dni);
+    ListarOtrosExamenes(dni);
+    VerAtencion(idatencion);
     abrirHistorial();
   });
 });
@@ -1202,3 +1188,56 @@ function ObtenerDatosPacienteCExt() {
     );
   }
 }
+
+$(function () {
+  $(document).on("click", "#tbConfirmados .fa-calendar-plus", function (e) {
+    e.preventDefault();
+    let parent = $(this).closest("table");
+    let tr = $(this).closest("tr");
+    let codigo = $(tr).find("td").eq(1).html();
+    $("#ate_idatencion").val(codigo);
+    let data = { accion: "OBTENER_DATOS_ATENCION", idatencion: codigo };
+    let llamadoAjax = ajaxFunction(data);
+    let json = JSON.parse(llamadoAjax);
+    let atencion = json.atencion;
+    $("#NombresAtencion").html(
+      `${atencion[0].paciente}<br/><span>Dni: ${atencion[0].dni} | Edad: ${atencion[0].edad} años</span>`
+    );
+    $("#ate_fc").val(atencion[0].fr);
+    $("#ate_pa").val(atencion[0].pa);
+    $("#ate_temp").val(atencion[0].temp);
+    $("#ate_so2").val(atencion[0].so2);
+    $("#ate_peso").val(atencion[0].peso);
+    $("#dni_atencion").val(atencion[0].dni);
+
+    let dataAnt = { accion: "OBTENER_ANTECEDENTES_G", dni: atencion[0].dni };
+    let llamadoAjaxAnt = ajaxFunction(dataAnt);
+    let jsonAnt = JSON.parse(llamadoAjaxAnt);
+    console.log(jsonAnt.antecedentesgenerales.length);
+
+    if (jsonAnt.antecedentesgenerales.length > 0) {
+      let antGenerales = jsonAnt.antecedentesgenerales;
+      console.log(antGenerales);
+      if (antGenerales[0].HTA === "SI") $("#htasi").prop("checked", true);
+      if (antGenerales[0].HIV === "SI") {
+        $("#hivsi").prop("checked", true);
+        $("#frmRegistrarAtencion").css("color", "#f7b731");
+        $(".modal").addClass("ambar");
+      }
+      if (antGenerales[0].DM === "SI") $("#dmsi").prop("checked", true);
+      if (antGenerales[0].HEPATITIS === "SI") {
+        $("#hepsi").prop("checked", true);
+        $("#frmRegistrarAtencion").css("color", "#27ae60");
+        $(".modal").addClass("green");
+      }
+      $("#alergias").val(antGenerales[0].ALERGIAS);
+      if ($("#alergias").val() !== "-") {
+        $("#frmRegistrarAtencion").css("color", "#e74c3c");
+        $(".modal").addClass("red");
+      } else {
+        $("#alergias").val("-");
+      }
+    }
+    abrirRegistrarAtencion();
+  });
+});
