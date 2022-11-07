@@ -1263,6 +1263,10 @@ overflow:hidden;
   .formlogin {
     backdrop-filter: none;
   }
+  .formlogin button{
+    min-width: 0 !important;
+    backdrop-filter: none;
+  }
   .cont-menu-responsive {
     padding: 7px 10px;
     z-index: 3;
