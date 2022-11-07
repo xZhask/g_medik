@@ -1,7 +1,6 @@
 <?php
 $idatencion = $_REQUEST['id'];
 $nombre = $_REQUEST['nombre'];
-//$dni = $_REQUEST['dni'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,7 +18,7 @@ $nombre = $_REQUEST['nombre'];
         <h2>
             <?php echo $nombre; ?>
         </h2>
-        <form method="POST" action="formularios/recibe_archivo.php" enctype="multipart/form-data">
+        <form id="frmUploadFile" method="POST" action="formularios/recibe_archivo.php" enctype="multipart/form-data">
             <input type="hidden" name="idatencion" id="idatencion" value="<?php echo $idatencion; ?>">
             <span class="mi-archivo">
                 <input type="file" name="mi-archivo" id="mi-archivo" accept="application/pdf" required>

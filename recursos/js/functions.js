@@ -240,7 +240,8 @@ function ListarPacientes() {
   $("#tbPacientes").html(llamadoAjax);
 }
 function ListarMedicamentos() {
-  let data = { accion: "LISTAR_MEDICAMENTOS" };
+  let filtro = $("#filtroProducto").val();
+  let data = { accion: "LISTAR_MEDICAMENTOS", filtro: filtro };
   let llamadoAjax = ajaxFunction(data);
   $("#tbMedicamentos").html(llamadoAjax);
 }
@@ -474,13 +475,6 @@ function bloquearControlsPaciente() {
   $("#ApellidosPaciente").addClass("textdisabled");
   $("#NombrePaciente").val("");
   $("#ApellidosPaciente").val("");
-}
-
-function FiltrarMedicamento() {
-  let filtro = $("#filtroProducto").val();
-  let data = { accion: "LISTAR_MEDICAMENTOS", filtro: filtro };
-  let llamadoAjax = ajaxFunction(data);
-  $("#tbMedicamentos").html(llamadoAjax);
 }
 /* REGISTROS */
 //Personal
@@ -779,7 +773,6 @@ function VerAtencion(idatencion) {
   $(".consulta_historia").addClass("consulta");
   $(".consulta_historia").removeClass("otropdf");
   $(".consulta_historia").removeClass("otroimg");
-
   let data = { accion: "OBTENER_DATOS_ATENCION", idatencion: idatencion };
   let llamadoAjax = ajaxFunction(data);
   let json = JSON.parse(llamadoAjax);
@@ -796,6 +789,39 @@ function VerAtencion(idatencion) {
   $("#hist_exfisico").html(atencion[0].exfisico);
   $("#hist_diagnostico").html(atencion[0].diagnostico);
   $("#hist_tratamiento").html(atencion[0].tratamiento);
+  $("#btnEditAtencion").attr("onclick", `editarAtencion(${idatencion})`);
+}
+
+function VerExamen(idatencion) {
+  $(".consulta_historia").addClass("examen");
+  $(".consulta_historia").removeClass("consulta");
+  $(".consulta_historia").removeClass("otropdf");
+  $(".consulta_historia").removeClass("otroimg");
+  $("#cont-examen").html("");
+  let data = { accion: "OBTENER_DATOS_ATENCION", idatencion: idatencion };
+  let llamadoAjax = ajaxFunction(data);
+  let json = JSON.parse(llamadoAjax);
+  let atencion = json.atencion;
+  $("#hist_fecha").html("Fecha : " + atencion[0].fechaatencion);
+  $("#hist_fc").html("<span>FC : " + atencion[0].fr + "</span>");
+  $("#hist_pa").html("<span>PA : " + atencion[0].pa + "</span>");
+  $("#hist_t").html("<span>T° : " + atencion[0].temp + "</span>");
+  $("#hist_so2").html("<span>So2 : " + atencion[0].so2 + "</span>");
+  $("#hist_peso").html("<span>PESO : " + atencion[0].peso + "</span>");
+  $("#hist_antecedente").html(atencion[0].antecedente);
+  $("#hist_molestia").html(atencion[0].motivoconsulta);
+  $("#hist_anamnesis").html(atencion[0].anamensis);
+  $("#hist_exfisico").html(atencion[0].exfisico);
+  $("#hist_diagnostico").html(atencion[0].diagnostico);
+  $("#hist_tratamiento").html(atencion[0].tratamiento);
+  $("#btnEditAtencion").attr("onclick", `editarAtencion(${idatencion})`);
+  data = { accion: "OBTENER_DATOS_EXAMEN", idatencion: idatencion };
+  llamadoAjax = ajaxFunction(data);
+  let jsonExamen = JSON.parse(llamadoAjax);
+  let examen = jsonExamen.atencion;
+  $("#cont-examen").html(
+    `<iframe src="formularios/${examen[0].examen}" width="100%"></iframe>`
+  );
 }
 function limpiarhistoria() {
   $("#hist_fecha").html("Fecha : -");
@@ -812,20 +838,6 @@ function limpiarhistoria() {
   $("#hist_tratamiento").html("-");
   $("#cont-imagenes").html("");
   $("#cont-examen").html("");
-}
-function VerExamen(idatencion) {
-  $(".consulta_historia").addClass("examen");
-  $(".consulta_historia").removeClass("consulta");
-  $(".consulta_historia").removeClass("otropdf");
-  $(".consulta_historia").removeClass("otroimg");
-  $("#cont-examen").html("");
-  let data = { accion: "OBTENER_DATOS_EXAMEN", idatencion: idatencion };
-  let llamadoAjax = ajaxFunction(data);
-  json = JSON.parse(llamadoAjax);
-  atencion = json.atencion;
-  $("#cont-examen").html(
-    `<iframe src="formularios/${atencion[0].examen}" width="100%"></iframe>`
-  );
 }
 // ------------------------------ ↓↓ CAMBIOOOS ↓↓ --------------------------
 function VerPDF(idexamen) {
@@ -933,8 +945,8 @@ $(function () {
     event.preventDefault();
     let parent = $(this).closest("table");
     let tr = $(this).closest("tr");
-    idatencion = $(tr).find("td").eq(0).html();
-    dni = $(tr).find("td").eq(1).html();
+    let idatencion = $(tr).find("td").eq(0).html();
+    let dni = $(tr).find("td").eq(1).html();
     let data = { accion: "OBTENER_DATOS_PACIENTE", dni: dni };
     let llamadoAjax = ajaxFunction(data);
     let json = JSON.parse(llamadoAjax);
@@ -1192,6 +1204,7 @@ function ObtenerDatosPacienteCExt() {
 $(function () {
   $(document).on("click", "#tbConfirmados .fa-calendar-plus", function (e) {
     e.preventDefault();
+    $("#typeAction").val("REGISTRAR");
     let parent = $(this).closest("table");
     let tr = $(this).closest("tr");
     let codigo = $(tr).find("td").eq(1).html();
@@ -1200,6 +1213,7 @@ $(function () {
     let llamadoAjax = ajaxFunction(data);
     let json = JSON.parse(llamadoAjax);
     let atencion = json.atencion;
+    console.log(llamadoAjax);
     $("#NombresAtencion").html(
       `${atencion[0].paciente}<br/><span>Dni: ${atencion[0].dni} | Edad: ${atencion[0].edad} años</span>`
     );
@@ -1234,10 +1248,65 @@ $(function () {
       if ($("#alergias").val() !== "-") {
         $("#frmRegistrarAtencion").css("color", "#e74c3c");
         $(".modal").addClass("red");
-      } else {
-        $("#alergias").val("-");
-      }
+      } else $("#alergias").val("-");
     }
+    document.getElementById(
+      "btnregistraratencion"
+    ).innerHTML = `Registrar Atención`;
     abrirRegistrarAtencion();
   });
 });
+function editarAtencion(codigo) {
+  $("#typeAction").val("MODIFICAR");
+  $("#ate_idatencion").val(codigo);
+  let data = { accion: "OBTENER_DATOS_ATENCION", idatencion: codigo };
+  let llamadoAjax = ajaxFunction(data);
+  let json = JSON.parse(llamadoAjax);
+  let atencion = json.atencion;
+  console.log(llamadoAjax);
+  $("#NombresAtencion").html(
+    `${atencion[0].paciente}<br/><span>Dni: ${atencion[0].dni} | Edad: ${atencion[0].edad} años</span>`
+  );
+  $("#ate_fc").val(atencion[0].fr);
+  $("#ate_pa").val(atencion[0].pa);
+  $("#ate_temp").val(atencion[0].temp);
+  $("#ate_so2").val(atencion[0].so2);
+  $("#ate_peso").val(atencion[0].peso);
+  $("#dni_atencion").val(atencion[0].dni);
+
+  let dataAnt = { accion: "OBTENER_ANTECEDENTES_G", dni: atencion[0].dni };
+  let llamadoAjaxAnt = ajaxFunction(dataAnt);
+  let jsonAnt = JSON.parse(llamadoAjaxAnt);
+  console.log(jsonAnt.antecedentesgenerales.length);
+
+  if (jsonAnt.antecedentesgenerales.length > 0) {
+    let antGenerales = jsonAnt.antecedentesgenerales;
+    console.log(antGenerales);
+    if (antGenerales[0].HTA === "SI") $("#htasi").prop("checked", true);
+    if (antGenerales[0].HIV === "SI") {
+      $("#hivsi").prop("checked", true);
+      $("#frmRegistrarAtencion").css("color", "#f7b731");
+      $(".modal").addClass("ambar");
+    }
+    if (antGenerales[0].DM === "SI") $("#dmsi").prop("checked", true);
+    if (antGenerales[0].HEPATITIS === "SI") {
+      $("#hepsi").prop("checked", true);
+      $("#frmRegistrarAtencion").css("color", "#27ae60");
+      $(".modal").addClass("green");
+    }
+    $("#alergias").val(antGenerales[0].ALERGIAS);
+    if ($("#alergias").val() !== "-") {
+      $("#frmRegistrarAtencion").css("color", "#e74c3c");
+      $(".modal").addClass("red");
+    } else $("#alergias").val("-");
+  }
+  $("#ate_antecedentes").html(atencion[0].antecedente);
+  $("#ate_molestia").html(atencion[0].motivoconsulta);
+  $("#txtanamnesis").html(atencion[0].anamensis);
+  $("#txtexamenfisico").html(atencion[0].exfisico);
+  $("#txtdiagnostico").html(atencion[0].diagnostico);
+  $("#txttratamiento").html(atencion[0].tratamiento);
+  document.getElementById("btnregistraratencion").innerHTML =
+    "Modificar Atención";
+  abrirRegistrarAtencion();
+}

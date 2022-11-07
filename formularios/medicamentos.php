@@ -11,7 +11,7 @@
 </div>
 <div class="cont-medicamentos w100">
     <div class="cont-tabla cont-tb-med">
-        <input type="text" class="w100" name="filtroProducto" id="filtroProducto" placeholder="Buscar ..." onkeyup="FiltrarMedicamento()">
+        <input type="text" class="w100" name="filtroProducto" id="filtroProducto" placeholder="Buscar ..." onkeyup="ListarMedicamentos()">
         <table>
             <thead>
                 <tr>

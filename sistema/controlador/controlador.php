@@ -462,7 +462,7 @@ function controlador($accion)
 
                         if ($idcargo == 1 || $idcargo == 2) {
                             if (
-                                $fila['motivo'] === 'CONSULTA MÉDICA' ||
+                                $fila['motivo'] === 'CONSULTA MÉDICA' || $fila['motivo'] === 'CITA DE CONTROL' ||
                                 $obteneratencion['estado'] === 'EN PROGR'
                             ) {
                                 echo '<td class="ta-center"><i class="far fa-calendar-plus"></i></td>';
@@ -742,11 +742,11 @@ function controlador($accion)
                 'exfisico' => $_POST['txtexamenfisico'],
                 'diagnostico' => $_POST['txtdiagnostico'],
                 'tratamiento' => $_POST['txttratamiento'],
-                //'examen' => '-',
                 'estado' => 'FINALIZADO',
             ];
-
-            $objAtencion->ActualizarAtencion($atencion);
+            if ($_POST['typeAction'] === 'REGISTRAR')
+                $objAtencion->ActualizarAtencion($atencion);
+            else $objAtencion->editarAtencion($atencion);
             //ACTUALIZACIÓN O REGISTRO DE ANTECEDENTES
             $antecedentesGen = [
                 'dni' => $paciente,
@@ -777,7 +777,6 @@ function controlador($accion)
             ];
             $objAntecedentes->RegistrarAntecedentesAtencion($antecedentesAte);
             echo 'SE REGISTRÓ ATENCIÓN';
-
             break;
         case 'LISTAR_ATENCIONES':
             session_start();

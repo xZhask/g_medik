@@ -181,6 +181,7 @@ $cargo = $_SESSION['cargo'];
         <input type="hidden" id="AccionAtencion" name="accion" value="REGISTRAR_ATENCION" />
         <input type="hidden" name="ate_idatencion" id="ate_idatencion">
         <input type="hidden" name="dni_atencion" id="dni_atencion">
+        <input type="hidden" id="typeAction" name="typeAction" value="REGISTRAR" />
         <fieldset class="signos-vitales">
           <legend>
             Signos vitales
@@ -371,6 +372,7 @@ $cargo = $_SESSION['cargo'];
             </ul>
           </div>
           <div class="consulta_historia">
+            <div class="cont-opciones-examenes"><button type="button" id="btnEditAtencion">Editar Atención</button></div>
             <div class="hist_signos datosconsulta">
               <h4>SIGNOS VITALES</h4>
               <div class="cont-signos">

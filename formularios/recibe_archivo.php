@@ -4,12 +4,11 @@ require_once '../sistema/ado/clsAtencion.php';
 $objAtencion = new clsAtencion();
 
 $idatencion = $_POST['idatencion'];
-$idusuario = $_SESSION['iduser'];
+$idusuario = $_SESSION['idatencion'];
 $fecha = date('Y/m/d H:i:s');
 
 $examenpdf = $_FILES['mi-archivo']['name'];
 $sourceexamenpdf = $_FILES['mi-archivo']['tmp_name'];
-
 $directorioexamenes = 'examenes/';
 $examenpdf = time() . '.pdf';
 $dir = opendir($directorioexamenes);
@@ -33,4 +32,3 @@ if (move_uploaded_file($sourceexamenpdf, $target_path)) {
     echo 'Ha ocurrido un error, por favor inténtelo de nuevo.';
 }
 closedir($dir);
-?>

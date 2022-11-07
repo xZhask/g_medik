@@ -1252,8 +1252,16 @@ overflow:hidden;
   }
 }
 @media screen and (max-width: 767px) {
-  .cont_form_login form {
-    width: 90%;
+  .cont-login{
+    flex-direction: column;
+    gap: 3em;
+  }
+  .cont-login .cont-logo{
+    border-right: none;
+    padding: 0 1em;
+}
+  .formlogin {
+    backdrop-filter: none;
   }
   .cont-menu-responsive {
     padding: 7px 10px;

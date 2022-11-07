@@ -116,6 +116,26 @@ class clsAtencion
         $pre->execute($parametros);
         return $pre;
     }
+    function editarAtencion($atencion)
+    {
+        $sql =
+            'UPDATE atencion SET idusuario=:idusuario, motivoconsulta=:motivoconsulta, antecedente=:antecedente, anamensis=:anamensis, exfisico=:exfisico, diagnostico=:diagnostico, tratamiento=:tratamiento WHERE idatencion=:idatencion';
+
+        $parametros = [
+            ':idatencion' => $atencion['idatencion'],
+            ':idusuario' => $atencion['idusuario'],
+            ':motivoconsulta' => $atencion['motivoconsulta'],
+            ':antecedente' => $atencion['antecedente'],
+            ':anamensis' => $atencion['anamensis'],
+            ':exfisico' => $atencion['exfisico'],
+            ':diagnostico' => $atencion['diagnostico'],
+            ':tratamiento' => $atencion['tratamiento'],
+        ];
+        global $cnx;
+        $pre = $cnx->prepare($sql);
+        $pre->execute($parametros);
+        return $pre;
+    }
     function RegistrarSignosVitales($SignosVitales)
     {
         $sql =
