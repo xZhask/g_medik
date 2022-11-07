@@ -89,7 +89,7 @@ function controlador($accion)
             curl_setopt(
                 $curl,
                 CURLOPT_CAINFO,
-                dirname(__FILE__) . '/../cacert2021.pem'
+                dirname(__FILE__) . '/../cacert-2022-10-11.pem'
             );
 
             $response = curl_exec($curl);
